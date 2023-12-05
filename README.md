@@ -146,3 +146,198 @@ windows : Administrator
 
 
 ```
+
+
+```
+ansible ad-hoc commands : linux commands ( ovveride )
+
+
+- u remote-user
+-- become-user
+-b
+
+
+clear
+   81  ls
+   82  pwd
+   83  mkdir raman
+   84  cd raman/
+   85  ls
+   86  cd ..
+   87  ls
+   88  clear
+   89  cd /etc/ansible/
+   90  ls
+   91  cat hosts
+   92  clear
+   93  cd /etc/ansible/
+   94  ls
+   95  cd /root/raman/
+   96  ls
+   97  vi inv
+   98  vi /etc/ansible/hosts
+   99  ls
+  100  ansible all -m ping
+  101  ansible all -m ping  -i inv
+  102  clear
+  103  ls
+  104  ansible all -m ping  -i inv
+  105*
+  106  ls
+  107  cat inv
+  108  vi inv
+  109  ansible all -m ping  -i inv
+  110  vi inv
+  111  clear
+  112  vi /etc/ansible/hosts
+  113  ls
+  114  ansible all -m ping
+  115  ansible all -m ping -i inv
+  116  cd /etc/ansible/
+  117  ls
+  118  cat ansible.cfg
+  119  lear
+  120  ls
+  121  cd /root/raman
+  122  ansible all -m ping -i inv
+  123  ls
+  124  clear
+  125  ls
+  126  ansible all -a "ls -ltr"
+  127  ansible all -a "ls -ltr" -i inv
+  128  ls
+  129  ansible all -a "ls -la" -i inv
+  130  clear
+  131  ls
+  132  vi inv
+  133  ansible demo -a "ls"
+  134  ansible demo -a "ls" -i inv
+  135  cd /home/centos
+  136  cat /root/raman/inv
+  137  cd /home/centos/
+  138  vi inv2
+  139  cd /root/raman/
+  140  ls
+  141  ansible demo -a "ls" -i inv
+  142  ansible demo1 -a "ls" -i inv
+  143  ansible demo1 -a "ls" -i /home/centos/inv2
+  144  ansible demo -a "ls" -i /home/centos/inv2
+  145  clear
+  146  ls
+  147  cat invq
+  148  cat inv
+  149  ansible demo[0:4] -a "ls" -i /home/centos/inv2
+  150  ansible demo[0:4] -a "ls" -i inv
+  151  clear
+  152  ansible -h
+  153  clear
+  154  ansible -h
+  155  clear
+  156  ansible demo --list-hosts
+  157  ansible demo --list-hosts -i inv
+  158  ansible all -a "touch myfile" -i inv
+  159  ansible all -a "ls -ltr" -i inv
+  160  clear
+  161  ansible -h
+  162  ls
+  163  vi raman.pem
+  164  ls
+  165  ansible all -a "ls -ltr" -i inv --private-key raman.pem -u centos
+  166  chmod 400 raman.pem
+  167  ansible all -a "ls -ltr" -i inv --private-key raman.pem -u centos
+  168  ansible all -a "ls -ltr" -i inv --private-key raman.pem -u centos --become-user raman
+  169  ansible all -a "touch /root/raman.txt" -i inv --private-key raman.pem -u centos
+  170  ansible all -a "touch /root/raman.txt" -i inv --private-key raman.pem -u centos -b
+  171  ansible -h
+  172  clear
+  173  ls
+  174  rm -rf raman.pem
+  175  ls
+  176  history
+  177  clear
+  178  ansible demo -i inv  -a "touch myfile"
+  179  ansible all -a "yum install httpd -y"
+  180  ansible all -i inv -a "yum install httpd -y"
+  181  ansible all -i inv -a "systemctl start httpd"
+  182  ansible all -i inv -a "yum remove httpd -y"
+  183  ansible demo -i inv  -a "rm -rf myfile"
+
+
+
+
+
+
+modules : file  , modukes in ad hic commands
+
+
+
+ ifconfig
+  188  cear
+  189  clear
+  190  ls
+  191  cd /usr/bin/
+  192  ls
+  193  ls ls
+  194  ls
+  195  clear
+  196  ansible demo -m ping -i inv
+  197  cd /root/raman/
+  198  ansible demo -m ping -i inv
+  199  ansible-doc -l
+  200  clear
+  201  ansible-doc -l | grep ping
+  202  clear
+  203  ansible-doc -v  ping
+  204  clear
+  205  ansible-doc -l | grep user
+  206  clear
+  207  ansible demo -i inv "touchmyfile"
+  208  ansible demo -i inv -a "touchmyfile"
+  209  ansible demo -i inv -a "touch myfile"
+  210  ansible demo -i inv -a "rm -rf myfile"
+  211  clear
+  212  ansible demo[0] -i inv -m user -a "name=raman comment=\"created a user with ansible\" group=root shell=/bin/bash"
+  213  ansible demo[1] -i inv -m user -a "name=raman comment=\"created a user with ansible\" group=root shell=/bin/bash"
+  214  ansible demo[0] -i inv -m user -a "name=raman comment=\"created a user with ansible\" group=root shell=/bin/bash"
+  215  ansible demo -i inv -m user -a "name=raman comment=\"created a user with ansible\" group=root shell=/bin/bash"
+  216  clear
+  217  ansible demo -i inv -m yum -a "name=telnet state=present"
+  218  ansible demo -i inv -m -a "which telnet"
+  219  ansible demo -i inv -a "which telnet"
+  220  ansible demo -i inv -m yum -a "name=telnet state=present"
+  221  clear
+  222  ansible demo -m file -a "path=/tmp/ramanfile state=directory mode=777"
+  223  ansible demo -m file -a "path=/tmp/ramanfile state=directory mode=777" -i inv
+  224  ansible demo -m file -a "path=/tmp/ramanfile2 state=touch mode=777" -i inv
+  225  clear
+  226  ansible demo -i inv -m setup
+  227  clear
+  228  ansible demo[0] -i inv -m setup
+  229  clear
+  230  ansible demo -i inv -m setup -a "filter=ansible_machine_id"
+  231  ansible demo -i inv -m yum -a "name=telnet state=present"
+  232  ansible demo - inv -m service -a "name=ntpd state=restarted"
+  233  ansible demo -i inv -m service -a "name=telnet state=restarted"
+  234  ansible demo -i inv -m yum -a "name=httpd state=present"
+  235  ansible demo -i inv -m service -a "name=httpd state=restarted"
+  236  clear
+  237  ansible client -m package -a "name=telnet state=present"
+  238  ansible demo -i inv -m package -a "name=telnet state=present"
+  239  ansible client -m copy -a "src=/tmp/myfile dest=/root mode=777"
+  240  ansible all -i inv -m copy -a "src=/tmp/rkmyfile dest=/root mode=770"
+  241  cat inv
+  242  vi /tmp/rkmyfile
+  243  ansible all -i inv -m copy -a "src=/tmp/rkmyfile dest=/root mode=770"
+  244  ansible all -i inv -m shell -a "ls;uname -a"
+  245  history
+[root@main raman]# ansible all -i inv -m shell -a "ls;uname -a" > /tmp/outp
+
+
+
+
+
+
+playbooks : file , multiple tasks
+
+
+```
