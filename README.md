@@ -1,3 +1,16 @@
+```
+practise server :
+
+
+main pr : 3.94.208.216
+
+m1: 54.205.248.254
+
+m2: 23.22.118.142
+
+```
+
+
 # ansible-capgemini-tr
 
 ```
