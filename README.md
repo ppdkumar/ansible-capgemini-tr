@@ -341,3 +341,267 @@ playbooks : file , multiple tasks
 
 
 ```
+```
+
+ad hoc commands 
+ad hoc +modules 
+
+
+
+
+
+
+
+multiple tasks: decalarative template (yaml/yml)
+
+documented :  reexecute 
+
+
+
+playbook : . yaml
+
+    play (demo group)
+
+         tasks (set of operations)
+
+    
+
+
+   play (web group)
+
+         tasks (set of operations)
+
+
+
+-------------------------
+
+ansible demo[1:5]  -u (remote user) --become-user -b --become-method=su
+
+
+ansible demo -m setup
+
+pvt 
+
+ssh-copy-id publuc
+ssh-keygen -t (customize)
+
+
+
+
+[3:31 PM] Raman Khanna
+[root@main raman]# cat target.yml
+
+---
+
+- hosts: demo
+
+#  user: centos
+
+#  become: yes
+
+#  connection: ssh
+
+#  gather_facts: true
+
+  tasks:
+
+  - name: installation httpd
+
+    action: yum name=httpd state=present
+
+  - name: adding a file
+
+    action: file path=/opt/rktest state=directory
+
+[3:32 PM] Raman Khanna
+vi target.yml
+
+  272  ls
+
+  273  ansible-playbook target.yml
+
+  274  ls
+
+  275  ansible-playbook target.yml -i inv
+
+  276  cat inv
+
+  277  vi raman.pem
+
+  278  ls
+
+  279  ansible-playbook target.yml -i inv -h
+
+  280  ansible-playbook target.yml -i inv --private-key raman.pem
+
+  281  ls
+
+  282  chmod 400 raman.pem
+
+  283  ansible-playbook target.yml -i inv --private-key raman.pem
+
+  284  clear
+
+  285  ls
+
+  286  ansible-playbook target.yml -i inv --private-key raman.pem
+
+  287  clear
+
+  288  vi target.yml
+
+  289  ansible-playbook target.yml -i inv
+
+  290  ls
+
+
+
+
+
+------------------------------------------------
+
+
+---
+- hosts: demo
+#  user: centos
+#  become: yes
+#  connection: ssh
+#  gather_facts: true
+  tasks:
+  - name: installation httpd
+    action: yum name=httpd state=present
+  - name: adding a file
+    action: file path=/opt/rktest state=directory
+  - name: group creation
+    group:
+      name: grp1
+      gid: 5555
+  - name: another group
+    group: name=grp2 gid=5656
+
+
+
+
+
+ansible-playbook target.yml -i inv
+  297  ansible-playbook target.yml -i inv --syntax-check
+  298  ansible-playbook target.yml -i inv --check
+  299  clear
+  300  ansible-playbook target.yml -i inv --step
+  301  clear
+
+
+
+
+------------------------------------------------
+
+Create a Playbook for User and Group Creation with user name "usertest", shell bash, userid 6666 and pass the comments as "my first user". Group details will be name "grouptest" and group id 7777.
+
+Create a Playbook for files and directories:
+create a directory with root ownership; inside this directory, create one file with “test” with ownership of usertest (the user we have created in 1st example). Copy some content into the newly created file
+
+
+
+
+[root@main raman]# cat lab6.yml
+---
+- hosts: demo
+  name: create a user and associate that user with group
+  tasks:
+  - name: create group
+    group: name=grouptest gid=7777 state=present
+  - name: create user
+    user: name=usertest uid=6666 comment="my first user" group=grouptest state=present shell=/bin/bash
+  - name: create a directory
+    file: path=/tmp/rktestdir state=directory owner=root group=root mode=0755
+  - name: create the file
+    copy:
+      content: This is  my content to be copied into dest.
+      dest: /tmp/rktestdir/rktestfile
+      owner: usertest
+      group: grouptest
+      mode: 0644
+
+
+
+---------------------------------------
+
+
+
+
+play
+  tasks
+  1
+  2
+3
+4
+5
+6
+
+
+handlers
+
+play
+
+
+
+----------------------
+
+
+---
+- hosts: all
+  tasks:
+  - name: ntp os package installation
+    package: name=ntp state=present
+  - name: ntp file config
+    file: path=/etc/ntp.conf state=file
+  - name: to start the svc
+    service: name=ntpd state=started enabled=yes
+
+
+
+
+
+
+---
+- hosts: all
+  tasks:
+  - name: ntp os package installation
+    package: name=ntp state=present
+  - name: ntp file config
+    file: path=/etc/ntp.conf state=file
+    notify:
+    - restartntp
+  - name: to start the svc
+    service: name=ntpd state=started enabled=yes
+
+  handlers:
+  - name: restartntp
+    service: name=ntpd state=restarted
+
+
+
+
+----
+
+
+
+[root@main raman]# cat ntp.yml
+---
+- hosts: all
+  tasks:
+  - name: ntp os package installation
+    package: name=ntp state=present
+  - name: ntp file config
+    copy: src=ntp.conf dest=/etc/ntp.conf
+    notify:
+    - restartntp
+  - name: to start the svc
+    service: name=ntpd state=started enabled=yes
+
+  handlers:
+  - name: restartntp
+    service: name=ntpd state=restarted
+
+-------------------------------------------
+```
