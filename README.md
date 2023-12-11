@@ -605,3 +605,390 @@ play
 
 -------------------------------------------
 ```
+
+
+
+```
+
+[root@main raman]# cat variable.yml
+- hosts: demo
+#  user: centos
+#  become: yes
+#  connection: ssh
+  vars:
+    pkg: httpd
+#   capg: tree
+    us1: gagan
+    us2: ""
+    uid1: 9876
+    uid2: 8765
+
+
+
+  tasks:
+  - name: install {{ pkg }}
+    yum: name={{ pkg }} state=installed
+#   yum: name={{ capg }} state=installed
+  - name: creating user1
+    user: name={{ us1 }} uid={{ uid1 }} state=present
+  - name: creating user2
+    user: name={{ us2 }} uid={{ uid2 }} state=present
+
+
+ansible-playbook -i inv variable.yml -e us2="vrbd" 
+
+
+
+
+
+
+
+
+
+
+[root@main raman]# cat ntp.yml
+---
+- hosts: all
+  vars:
+    pkg: ntp
+    svc: ntpd
+  tasks:
+  - name: package installation - {{ pkg }}
+    package: name={{ pkg }} state=present
+  - name: ntp file config
+    copy: src=ntp.conf dest=/etc/ntp.conf
+    notify:
+    - restartntp
+  - name: to start the svc of {{ pkg }}
+    service: name={{ svc }} state=started enabled=yes
+  - name: final statement task
+    debug: msg="playbook ran successfully , congrats !! on server {{ ansible_hostname }}"
+  handlers:
+  - name: restartntp
+    service: name={{ svc }} state=restarted
+
+
+=========================================================================
+
+
+
+
+
+---
+- hosts: all
+  name: webserver deployment
+  tasks:
+  - name: installing apache
+    yum: name=httpd state=present
+  - name: change port of webserver
+    lineinfile: path=/etc/httpd/conf/httpd.conf regexp="Listen 80" line="Listen 81"
+  - name: configure the config files
+    copy:
+      dest: /var/www/html/index.html
+      content: "<h1>This is a Raman's apache webserver</h1>"
+    notify: restart httpd
+  - name: service-start
+    service: name=httpd enabled=yes state=started
+  handlers:
+  - name: restart httpd
+    service: name=httpd state=restarted
+
+
+
+
+
+
+
+[root@main raman]# cat http.yml
+---
+- hosts: all
+  name: webserver deployment
+  vars:
+    pkg: httpd
+  tasks:
+  - name: installing {{ pkg }}
+    yum: name={{ pkg }} state=present
+  - name: change port of webserver
+    lineinfile: path=/etc/httpd/conf/httpd.conf regexp="Listen 80" line="Listen 81"
+  - name: configure the config files
+    template: src=index.html dest=/var/www/html/index.html
+#    copy:
+#      dest: /var/www/html/index.html
+#      content: "<h1>This is a Raman's apache webserver</h1>"
+    notify: restart httpd
+  - name: service-start
+    service: name=httpd enabled=yes state=started
+  handlers:
+  - name: restart httpd
+    service: name=httpd state=restarted
+
+
+
+
+ansible_all_ipv4_addresses 
+ansible_distribution"
+
+
+
+
+
+
+[root@main raman]# cat index.html
+<html>
+<head>
+<title>Server Information</title>
+</head>
+<body>
+<h1>Raman’s server hosted on {{ ansible_hostname }} having private ip : {{ ansible_all_ipv4_addresses }} and linux-distro : {{ ansible_distribution }} </h1>
+</body>
+</html>
+
+
+
+
+================================================================================
+
+
+debug : msg ""
+var
+
+
+
+
+[root@main raman]# cat factset.yml
+---
+- name: This is my First Debug Play
+  hosts: all
+  tasks:
+    - name: Testing Ansible Facts {{ ansible_hostname }}
+# My task with outputs fetched from Facts
+      debug: msg="Host {{ ansible_hostname }} is having IP address {{ ansible_eth0.ipv4.address }}"
+    - name: install ntp
+      yum: name=ntp state=installed
+      register: ntp_out
+    - name: printing outputof task1
+      debug: var=ntp_out
+    - name: printing specific result for individual return value .
+      debug: var=ntp_out.changed
+
+
+==========================================================================================================
+
+
+
+
+ ansible-playbook target.yml -i inv -h
+  280  ansible-playbook target.yml -i inv --private-key raman.pem
+  281  ls
+  282  chmod 400 raman.pem
+  283  ansible-playbook target.yml -i inv --private-key raman.pem
+  284  clear
+  285  ls
+  286  ansible-playbook target.yml -i inv --private-key raman.pem
+  287  clear
+  288  vi target.yml
+  289  ansible-playbook target.yml -i inv
+  290  ls
+  291  cat target.yml
+  292  ls
+  293  history
+  294  clear
+  295  vi target.yml
+  296  ansible-playbook target.yml -i inv
+  297  ansible-playbook target.yml -i inv --syntax-check
+  298  ansible-playbook target.yml -i inv --check
+  299  clear
+  300  ansible-playbook target.yml -i inv --step
+  301  clear
+  302  ls
+  303  cat target.yml
+  304  history
+  305  clear
+  306  vi lab6.yml
+  307  ansible-playbook-i inv lab6.yml
+  308  ansible-playbook -i inv lab6.yml
+  309  ls
+  310  vi lab6.yml
+  311  ansible-playbook -i inv lab6.yml
+  312  vi lab6.yml
+  313  ansible-playbook -i inv lab6.yml
+  314  vi lab6.yml
+  315  ansible-playbook -i inv lab6.yml --step
+  316  vi lab6.yml
+  317  ansible-playbook -i inv lab6.yml
+  318  vi labe6
+  319  vi lab6.yml
+  320  ansible-playbook -i inv lab6.yml
+  321  clear
+  322  ls
+  323  cat target.yml
+  324  cat lab6.yml
+  325  clear
+  326  ls
+  327  cp lab6.yml test.yml
+  328  ls
+  329  vi test.yml
+  330  ansible-playbook -i inv test.yml
+  331  cat test.yml
+  332  cat lab6.yml
+  333  vi test.yml
+  334  ansible-playbook -i inv test.yml
+  335  vi test.yml
+  336  ansible-playbook -i inv test.yml
+  337  clear
+  338  vi test.yml
+  339  ansible-playbook -i inv test.yml
+  340  vi test.yml
+  341  ansible-playbook -i inv test.yml
+  342  clear
+  343  ls
+  344  rm -rf test.yml
+  345  vi ntp.yml
+  346  ls
+  347  ansible-playbook -i inv ntp.yml
+  348  vi ntp.yml
+  349  ansible-playbook -i inv ntp.yml
+  350  vi ntp.yml
+  351  ansible-playbook -i inv ntp.yml
+  352  vi ntp.yml
+  353  clear
+  354  ansible-playbook -i inv ntp.yml
+  355  ls
+  356  vi ntp.conf
+  357  ls
+  358  ansible-playbook -i inv ntp.yml
+  359  clear
+  360  cat ntp.
+  361  cat ntp.conf
+  362  ansible-playbook -i inv ntp.yml
+  363  vi ntp.conf
+  364  ls
+  365  ansible-playbook -i inv ntp.yml
+  366  cat ntp.yml
+  367  clear
+  368  ls
+  369  hisory
+  370  history
+  371  clear
+  372  ls
+  373  cd raman/
+  374  ls
+  375  vi variable.yml
+  376  ls
+  377  cat inv
+  378  vi inv
+  379  clear
+  380  ls
+  381  ansible-playbook -i inv variable.yml
+  382  ls
+  383  ansible-playbook -i inv variable.yml --private-key raman.pem
+  384  cat variable.yml
+  385  vi variable.yml
+  386  ansible-playbook -i inv variable.yml --private-key raman.pem
+  387  vi variable.yml
+  388  ansible-playbook -i inv variable.yml --private-key raman.pem
+  389  vi variable.yml
+  390  ansible-playbook -i inv variable.yml --private-key raman.pem
+  391  vi variable.yml
+  392  ansible-playbook -i inv variable.yml --private-key raman.pem
+  393  clear
+  394  vi variable.yml
+  395  cat variable.yml
+  396  history
+  397  clear
+  398  vi variable.yml
+  399  ansible-playbook -i inv variable.yml
+  400  vi variable.yml
+  401  ansible-playbook -i inv variable.yml
+  402  vi variable.yml
+  403  ansible-playbook -i inv variable.yml
+  404  vi variable.yml
+  405  ansible-playbook -i inv variable.yml
+  406  cat variable.yml
+  407  ansible-playbook -h
+  408*
+  409  clear
+  410  cat variable.yml
+  411  history
+  412  clear
+  413  ls
+  414  vi ntp.yml
+  415  ansible-playbook -i inv ntp.yml
+  416  vi ntp.yml
+  417  ansible-playbook -i inv ntp.yml
+  418  vi ntp.yml
+  419  ansible-playbook -i inv ntp.yml
+  420  cat ntp.
+  421  cat ntp.yml
+  422  vi ntp.yml
+  423  clear
+  424  ansible demo[0] -m setup
+  425  ansible demo[0] -m setup -i inv
+  426  vi ntp.yml
+  427  clear
+  428  ls
+  429  vi ntp.conf
+  430  cat ntp.yml
+  431  ansible -i inv ntp.yml
+  432  clear
+  433  cat ntp.yml
+  434  ansible-playbook -i inv ntp.yml
+  435  cat ntp.yml
+  436  cat variable.yml
+  437  clear
+  438  ls
+  439  ls -ltr
+  440  vi http.yml
+  441  ansible-playbook -i inv http.yml
+  442  vi http.yml
+  443  ansible-playbook -i inv http.yml
+  444  vi http.yml
+  445  clear
+  446  ls -ltr
+  447  ansible-playbook -i inv http.yml
+  448  vi http.yml
+  449  ls
+  450  cat http.yml
+  451  vi http.yml
+  452  ansible-playbook -i inv http.yml
+  453  clear
+  454  cat http.yml
+  455  clear
+  456  vi http.yml
+  457  ls
+  458  vi index.html
+  459  cat http.yml
+  460  ansible-playbook -i inv http.yml
+  461  vi index.html
+  462  ansible-playbook -i inv http.yml
+  463  ansible demo[0] -m setup
+  464  ansible demo[0] -m setup -i inv
+  465  ansible demo[0] -m setup -i inv | grep -i inventory
+  466  vi index.html
+  467  ansible-playbook -i inv http.yml
+  468  cat http.yml
+  469  cat index.html
+  470  clear
+  471  vi factset.yml
+  472  ansible-playbook -i inv  factset.yml
+  473  ansible-playbook -i inv  factset.yml -vvv
+  474  clear
+  475  cat factset.yml
+  476  vi factset.yml
+  477  ansible-playbook -i inv  factset.yml
+  478  vi factset.yml
+  479  ansible-playbook -i inv  factset.yml
+  480  vi factset.yml
+  481  ansible-playbook -i inv  factset.yml
+  482  vi factset.yml
+  483  ansible-playbook -i inv  factset.yml
+  484  ansible demo -a "yum remove ntp -y " -i inv
+  485  clear
+  486  ansible-playbook -i inv  factset.yml
+  487  cat factset.yml
+
+
+
+===================================================================================
+
+```
