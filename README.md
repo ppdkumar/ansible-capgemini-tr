@@ -992,3 +992,260 @@ var
 ===================================================================================
 
 ```
+```
+
+---
+- hosts: all
+  vars:
+    pkg: ntp
+    svc: ntpd
+  tasks:
+  - name: package installation - {{ pkg }}
+    package: name={{ pkg }} state=present
+    register: pkg_out
+  - name: print installation summ
+    debug: var=pkg_out.rc
+  - name: ntp file config
+    copy: src=ntp.conf dest=/etc/ntp.conf
+    notify:
+    - restartntp
+  - name: to start the svc of {{ pkg }}
+    service: name={{ svc }} state=started enabled=yes
+  - name: final statement task
+    debug: msg="playbook ran successfully , congrats !! on server {{ ansible_hostname }}"
+  handlers:
+  - name: restartntp
+    service: name={{ svc }} state=restarted
+
+
+========================================================
+
+
+playbook :
+  play
+     1
+2
+3  ---
+4
+4 ----
+5
+5
+
+
+---
+- hosts: all
+  tasks:
+  - name: this is first task
+    command: /bin/date12
+    ignore_errors: yes
+  - name: second task
+    service: name=ntpd state=restarted
+
+
+
+
+
+---
+- hosts: all
+  vars:
+    pkg: ntp
+    svc: ntpd
+  tasks:
+  - name: task1
+#    command: /dev/null
+    command: ls
+    ignore_errors: yes
+    register: task1_result
+  - name: debug task1
+    debug: var=task1_result
+  - name: package installation - {{ pkg }}
+    package: name={{ pkg }} state=present
+    register: pkg_out
+  - name: print installation summ
+    debug: var=pkg_out.rc
+  - name: ntp file config
+    copy: src=ntp.conf dest=/etc/ntp.conf
+    notify:
+    - restartntp
+  - name: to start the svc of {{ pkg }}
+    service: name={{ svc }} state=started enabled=yes
+  - name: final statement task
+    debug: msg="playbook ran successfully , congrats !! on server {{ ansible_hostname }}"
+  - name: final task
+    debug: msg="this task will only run when task1 fails"
+    when: task1_result.failed
+  handlers:
+  - name: restartntp
+    service: name={{ svc }} state=restarted
+
+
+
+====================================================================================================
+
+"ansible_distribution": "CentOS"
+
+ansible_distribution_major_version 7
+
+"ansible_distribution_version 7.9
+
+
+
+
+[root@main raman]# cat ignore2.yml
+- name: Conditional checks
+  hosts: all
+  tasks:
+    - name: Installing web packages on all centos version 7 servers
+#      yum: name=httpd state=installed
+#      when: ansible_distribution == 'CentOS' and ansible_distribution_major_version == '7'
+      when: ansible_distribution == 'CentOS' or ansible_distribution_major_version == '8'
+      yum: name=httpd state=installed
+
+
+
+
+# dont try
+- name: "shut down CentOS 6 and Debian 7 systems"
+    command: /sbin/shutdown -t now
+    when: (ansible_facts['distribution'] == "CentOS" and ansible_facts['distribution_major_version'] == "6") or
+          (ansible_facts['distribution'] == "Debian" and ansible_facts['distribution_major_version'] == "7")
+#
+
+
+
+
+
+[root@main raman]# cat condition.yml
+- hosts: all
+  vars:
+    key: home
+  tasks:
+  - name: Register a variable
+    package: name=ntp state=installed
+    register: ntp_out
+    ignore_errors: true
+  - name: debug
+    debug:
+      var: ntp_out
+  - name: Use the variable in conditional statement
+    shell: echo "motd contains the word ansible"
+    when: ntp_out.rc == 0
+    register: echo_output
+
+  - name: Display echoed message
+    debug:
+      var: echo_output.stdout
+
+  - name: Register a variable
+    shell: cat /etc/motd
+    register: motd_contents
+
+  - name: Use the variable in conditional statement
+    shell: echo "motd contains the word {{ key }}"
+    when: motd_contents.stdout.find('{{ key }}') != -1
+    register: echo_output
+
+  - name: Display echoed message
+    debug:
+      var: echo_output.stdout
+
+
+
+playbook 2:
+[root@gagan-master ~]# cat first.yaml
+---
+- name: play1 for creating user on gagan-client machine
+  hosts: gagan-client
+
+  tasks:
+    - name: description for task1 for creating user
+      user: name=gagandeep state=present
+      when: ansible_distribution == "CentOS" and ansible_distribution_version == "7.9"
+      register: user_out
+
+    - name: false task
+      debug:
+        #msg="Print this msg only if user creation is successfull"
+        var: user_out
+      ignore_errors: true
+#      when: user_out.rc == 0
+
+    - name: creating a file on next machine
+      file:
+        path: /tmp/gds
+        state: touch
+        mode: 1600
+      when: ansible_distribution == "Redhat"
+
+
+===============================================================================
+
+
+[ apple, banana, mango , fruit5 . fruit ] =list
+
+operation 
+
+for i in list:
+  operation
+    
+
+
+
+[root@main raman]# cat loop.yml
+---
+- hosts: all
+  tasks:
+  - name: add several users
+    user:
+      name: "{{ item }}"
+      state: present
+      groups: "wheel"
+#    loop: [testuser1,testuser1,testuser1]
+    loop:
+    - testuser1
+    - testuser2
+    - testuser3
+  - name: second task  for loop with condition
+    command: echo {{ item }}
+    loop: [1,2,3,5,7,8,9,10]
+    when: item>5
+
+
+
+
+CentOS Linux studout
+
+
+
+
+
+[root@main raman]# cat loop2.yml
+---
+- hosts: demo
+#  gather_facts: false
+  gather_facts: true
+  tasks:
+  - name: check centos version
+    command: cat /etc/os-release
+    register: centos_version
+
+  - name: output
+    debug: var=centos_version
+
+  - name: install packages
+    package: name="{{ item }}" state=present
+    loop: [php,gcc,talk,vim,httpd]
+#    when: ansible_distribution=='CentOS' and ansible_distribution_version=='7.9'
+    when: centos_version.stdout.find('CentOS Linux') != -1
+
+
+
+
+
+
+
+
+
+
+
+```
