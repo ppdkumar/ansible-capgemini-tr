@@ -1248,3 +1248,260 @@ CentOS Linux studout
 
 
 ```
+
+
+```
+
+
+
+
+
+
+---
+- hosts: all
+  vars:
+    pkg: ntp
+    svc: ntpd
+  tasks:
+  - name: task1
+#    command: /dev/null
+    command: ls
+    ignore_errors: yes
+    register: task1_result
+  - name: debug task1
+    debug: var=task1_result
+  - name: package installation - {{ pkg }}
+    package: name={{ pkg }} state=present
+    register: pkg_out
+  - name: print installation summ
+    debug: var=pkg_out.rc
+    when: pkg_out.rc == 0
+  - name: ntp file config
+    copy: src=ntp.conf dest=/etc/ntp.conf
+    notify:
+    - restartntp
+  - name: to start the svc of {{ pkg }}
+    service: name={{ svc }} state=started enabled=yes
+  - name: final statement task
+    debug: msg="playbook ran successfully , congrats !! on server {{ ansible_hostname }}"
+  - name: final task
+    debug: msg="this task will only run when task1 fails"
+    when: task1_result.failed
+  handlers:
+  - name: restartntp
+    service: name={{ svc }} state=restarted
+===================================================================================================
+
+
+
+
+
+
+
+
+READ-CSV MODULE :
+
+- hosts: demo
+  connection: ssh
+  user: root
+  become: true
+  vars:
+    source_file: "/root/yousuf/day4/user_data.csv"  # control node path
+    destination_dir: "/tmp"  # Temporary directory on managed nodes
+  
+  tasks:
+
+  - name: Fetch CSV file from control node to managed nodes
+    fetch:
+      src: "{{ source_file }}"
+      dest: "{{ destination_dir }}"
+      flat: yes
+
+  - name: Read a CSV file on managed nodes
+    read_csv:
+      path: "{{ destination_dir }}/user_data.csv"
+      delimiter: ","
+    register: usersList
+
+  - name: Create users in loop
+    loop: "{{ usersList.results }}"
+    user:
+      name: "{{ item.user }}"
+      uid: "{{ item.uid }}"
+
+
+
+
+
+
+
+- hosts: demo
+  connection: ssh
+  user: root
+  become: true
+  vars:
+ 
+  tasks:
+ 
+  - name: Read a CSV file
+    read_csv: path=/root/yousuf/day4/user_data.csv delimiter=","
+    register: usersList
+ 
+  - name: Create users in loop
+    loop: "{{ usersList.results }}"
+    user: name="{{ item.user }}" uid="{{ item.uid }}"
+
+
+
+==============================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
+#- hosts: demo
+#  roles:
+#  - ramanrole
+#  - ntp-role
+ 
+- hosts: demo
+  tasks:
+    - name: Execute ntp-role
+      include_role:
+        name: ntp-role
+      ignore_errors: true
+      register: ntp_result
+ 
+    - name: Execute ramanrole
+      when: ntp_result is succeeded
+      include_role:
+        name: ramanrole
+
+
+
+
+
+---
+- hosts: all
+  name: webserver deployment
+  vars:
+    pkg: httpd
+  tasks:
+  - name: installing {{ pkg }}
+    yum: name={{ pkg }} state=present
+  - name: change port of webserver
+    lineinfile: path=/etc/httpd/conf/httpd.conf regexp="Listen 80" line="Listen 81"
+  - name: configure the config files
+    template: src=index.html dest=/var/www/html/index.html
+#    copy:
+#      dest: /var/www/html/index.html
+#      content: "<h1>This is a Raman's apache webserver</h1>"
+    notify: restart httpd
+  - name: service-start
+    service: name=httpd enabled=yes state=started
+  handlers:
+  - name: restart httpd
+    service: name=httpd state=restarted
+
+
+
+
+
+
+
+==================================================================================
+
+
+
+
+
+
+[5:38 PM] Raman Khanna
+https://old-galaxy.ansible.com/search?deprecated=false&keywords=&order_by=-relevance
+Ansible Galaxy
+Jump start your automation project with great content from the Ansible community
+[5:39 PM] 
+Zarkar, Sheetal no longer has access to the chat.
+
+[5:39 PM] Raman Khanna
+try to observer galaxy 
+[5:40 PM] Raman Khanna
+to upload : upload ur role files to ur github repo ; go to ansible galaxy >> my content >> upload ur role github repo...
+[5:40 PM] Raman Khanna
+Raman Khanna
+to upload : upload ur role files to ur github repo ; go to ansible galaxy >> my content >> upload ur role github repo...
+
+old way
+
+[5:41 PM] Raman Khanna
+https://galaxy.ansible.com/
+Ansible Galaxy
+[5:41 PM] Raman Khanna
+https://beta-galaxy.ansible.com/
+Ansible Galaxy
+
+
+
+
+=============================================================================
+pki
+
+systtem password (raman) - source - encrypt>> rsa,aes,xyz --asymmetric key   ----------------------------namar---------------------------------     webserver /login  -dest -decrypt -assymtric
+
+
+
+ansible encrypt :
+
+ 
+
+ansible-vault -h
+  984  clear
+  985  ls
+  986  ansible-vault encrypt loop.yml
+  987  cat loop.yml
+  988  ansible-playbook loop.yml -i inv
+  989  ansible-playbook loop.yml -i inv --ask-vault-pass
+  990  ansible-vault decrypt loop.yml
+  991  cat loop.yml
+  992  clear
+  993  ansible-vault encrypt loop.yml
+  994  ls
+  995  ansible-vault -h
+  996  ansible-vault create new-playb.yml
+  997  ls
+  998  cat new-playb.yml
+  999  ansible-vault view loop.yml
+ 1000  ansible-vault edit loop.yml
+ 1001  ansible-vault -h
+ 1002  clear
+ 1003  history
+ 1004  ls
+ 1005  cd roles
+ 1006  ls
+ 1007  ansible-vault encrypt --vault-id password1@prompt ./inv
+ 1008  ansible-playbook -i inv myplay.yml
+ 1009  clear
+ 1010  ansible-vault encrypt --vault-id password2@prompt myplay.yml
+ 1011  ansible-playbook -i inv myplay.yml
+ 1012  ansible-playbook -i inv myplay.yml --vault-id password1@prompt password2@prompt
+ 1013  ansible-playbook -i inv myplay.yml --vault-id password1@prompt --vault-id password2@prompt
+ 1014  histoy
+ 1015  history
+ 1016  ansible-vault encrypt --vault-id password1@prompt ./inv
+ 1017  ansible-vault encrypt --vault-id password1@prompt inv
+ 1018  ansible-vault rekey --vault-id password1@prompt inv
+
+
+=================================================================================
+
+
+```
