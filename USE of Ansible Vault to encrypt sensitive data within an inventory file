@@ -1,0 +1,97 @@
+=========================================================================
+
+USE of Ansible Vault to encrypt sensitive data within an inventory file :
+
+Suppose you have an inventory file (inventory.ini) with two groups: [web] and [db]. You want to secure the passwords for connecting to these hosts.
+
+Your initial inventory might look like this:
+
+[web]
+server1 ansible_host=54.89.237.45
+ansible_user=admin
+ansible_password=ramankhanna
+
+[db]
+dbserver1 ansible_host=54.196.220.69
+ansible_user=dbadmin
+ansible_password=khannaraman
+
+
+
+
+
+--To encrypt the passwords using Ansible Vault:
+
+--Create a new variable file to store the encrypted passwords. For instance, vault_secrets.yml.
+
+--Encrypt the passwords using the ansible-vault encrypt_string command:
+
+
+ansible-vault encrypt_string 'ramankhanna' --name 'encrypted_web_password' >> vault_secrets.yml
+ansible-vault encrypt_string 'khannaraman' --name 'encrypted_db_password' >> vault_secrets.yml
+
+
+-- This will prompt you to enter and confirm a vault password.
+
+The content of vault_secrets.yml would look similar to this:
+
+
+
+encrypted_web_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          (encrypted_web_password_here)
+encrypted_db_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          (encrypted_db_password_here)
+Update your inventory file to reference the encrypted passwords:
+
+
+
+
+-- replace ur inv like below :
+
+[web]
+server1 ansible_host=54.89.237.45
+ansible_user=admin
+ansible_password="{{ encrypted_web_password }}"
+
+[db]
+dbserver1 ansible_host=54.196.220.69
+ansible_user=dbadmin
+ansible_password="{{ encrypted_db_password }}"
+
+
+
+-- This way, the sensitive passwords are encrypted and stored separately, and only users with access to the vault password can decrypt and access them during playbook execution.
+
+
+
+-- Let's create a simple example playbook that utilizes the previously encrypted variables from the inventory file:
+
+[root@main raman]# cat playb.yml
+---
+- name: Example Playbook
+  hosts: web,db
+  gather_facts: no
+
+  vars_files:
+    - vault_secrets.yml
+
+  tasks:
+    - name: Show encrypted web password
+      debug:
+        var: encrypted_web_password
+
+    - name: Show encrypted db password
+      debug:
+        var: encrypted_db_password
+
+
+
+To run this playbook against the inventory file with encrypted variables, use the following command:
+
+[root@main raman]# ansible-playbook -i inv playb.yml --ask-vault-pass
+
+
+
+======================================================================================================
