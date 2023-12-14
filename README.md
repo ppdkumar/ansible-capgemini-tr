@@ -1506,3 +1506,262 @@ ansible-vault -h
 
 
 ```
+
+
+```
+
+
+
+[root@main raman]# cat http.yml
+---
+- hosts: all
+  name: webserver deployment
+  vars:
+    pkg: httpd
+  tasks:
+  - name: installing {{ pkg }}
+    yum: name={{ pkg }} state=present
+  - name: change port of webserver
+    lineinfile: path=/etc/httpd/conf/httpd.conf regexp="Listen 80" line="Listen 81"
+  - name: configure the config files
+    template: src=index.j2 dest=/var/www/html/index.html
+#    copy:
+#      dest: /var/www/html/index.html
+#      content: "<h1>This is a Raman's apache webserver</h1>"
+    notify: restart httpd
+  - name: service-start
+    service: name=httpd enabled=yes state=started
+  handlers:
+  - name: restart httpd
+    service: name=httpd state=restarted
+
+
+
+
+[root@main raman]# cat index.j2
+<html>
+  <head>
+    <title>Server Information</title>
+  </head>
+  <body>
+    <h1>Raman’s server hosted on {{ ansible_hostname }} having private ip : {{ ansible_all_ipv4_addresses }} and linux-distro : {{ ansible_distribution }} </h1>
+</body>
+</html>
+
+
+
+
+
+
+
+[root@main raman]# cat jinja.yml
+---
+- hosts: all
+  tasks:
+  - name: execute command
+    command: echo 'hello capgemini users'
+    register: my_comm_output
+#  - name: temp
+#    debug: var=my_comm_output
+  - name: set a fact based on regsitered var
+    set_fact:
+      rk: "{{ my_comm_output.stdout }}"
+  - name: coping the motd file on remote srvers
+    template: src=/root/raman/motd.j2 dest=/etc/motd
+
+
+
+[root@main raman]# cat motd.j2
+********************** welcome 2 {{ ansible_distribution }} server ; {{ rk }} **************************
+IP add of this server is  {{ ansible_default_ipv4.address }}
+this hostname is {{ ansible_fqdn }}
+
+
+--------------------------------------------------------
+
+group of tasks : .yml
+
+- name: execute command
+    command: echo 'hello capgemini users'
+    register: my_comm_output
+#  - name: temp
+#    debug: var=my_comm_output
+  - name: set a fact based on regsitered var
+    set_fact:
+      rk: "{{ my_comm_output.stdout }}"
+
+========================================================================
+
+--- block run:
+   tasks 1
+    2 
+    3
+    4
+   when:
+   ignore err
+
+-  2md
+
+
+tags :
+
+1,3 prod
+
+1,2,4 dev
+
+
+
+ansible-playbook -i inv http.yml --tags prod
+1077  vi http.yml
+1078  ansible-playbook -i inv http.yml --tags prod
+1079  vi http.yml
+1080  ansible-playbook -i inv http.yml --tags prod
+1081  ansible-playbook -i inv http.yml --tags dev
+1082  ansible-playbook -i inv http.yml --tags dev,prod
+1083  ansible-playbook -i inv http.yml --skip-tags prod
+
+[root@main raman]# cat http.yml --- - hosts... by Raman Khanna
+4:26 PM
+Raman Khanna
+[root@main raman]# cat http.yml
+---
+- hosts: all
+  name: webserver deployment
+  vars:
+    pkg: httpd
+  tasks:
+  - include_tasks: task_group.yml
+  - name: 1 installing {{ pkg }}
+    yum: name={{ pkg }} state=present
+    ignore_errors: true
+    tags:
+    - prod
+    - dev
+  - name: 2 change port of webserver
+    lineinfile: path=/etc/httpd/conf/httpd.conf regexp="Listen 80" line="Listen 81"
+    ignore_errors: true
+    tags:
+    - dev
+  - name: 3 configure the config files
+    template: src=index.j2 dest=/var/www/html/index.html
+#    copy:
+#      dest: /var/www/html/index.html
+#      content: "<h1>This is a Raman's apache webserver</h1>"
+    notify: restart httpd
+    ignore_errors: true
+    tags:
+    - prod
+  - name: 4 service-start
+    service: name=httpd enabled=yes state=started
+    ignore_errors: true
+    tags:
+    - dev
+  handlers:
+  - name: restart httpd
+    service: name=httpd state=restarted
+ 
+has context menu
+
+
+======================================================
+
+
+tasks:
+   - name: Install, configure, and start Apache
+     block:
+       - name: Install httpd and memcached
+         yum:
+           name:
+           - httpd
+           - memcached
+           state: present
+
+       - name: Apply the foo config template
+           template:
+           src: templates/src.j2
+           dest: /etc/foo.conf
+
+       - name: Start service bar and enable it
+         service:
+           name: bar
+           state: started
+           enabled: True
+     when: ansible_facts['distribution'] == 'CentOS'
+     become: true
+     become_user: root
+     ignore_errors: yes
+   - name: install ntp 
+     block: 
+
+
+=================================================================
+ansible-playbook --tags xyz
+vi http.yaml
+include_tasks: tasks.yml , import_tasks : (tasks.yml 4)
+
+
+
+identation is diff than 
+- import_playbook : 
+
+
+aws roles /aws configure:
+
+iam permissions:
+
+iam roles : bots/service accounts /aws applicationsitself
+
+
+
+
+[root@main raman]# cat ec2.yml
+---
+- name: Create EC2 instance
+  hosts: localhost
+  gather_facts: False
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  tasks:
+    - name: Launch EC2 instance
+      ec2:
+        key_name: raman-nvirgnia
+        instance_type: t2.micro
+        image: ami-002070d43b0a4f171
+        region: us-east-1
+        group: raman-sg
+        count: 1
+        wait: yes
+        instance_tags: '{"Name":"Ansible-raman-ec2-KSA-2"}'
+      register: ec2_instance
+    - name: Display registered variable
+      debug:
+        var: ec2_instance
+
+
+
+
+ansible-playbook ec2.yml
+ 1163  python --version
+ 1164  ansible --vesion
+ 1165  ansible --version
+ 1166  clear
+ 1167  yum install boto
+ 1168  pip
+ 1169  yum install python3
+ 1170  pip3
+ 1171  clear
+ 1172  pip3 install boto
+ 1173  yum install boto3
+ 1174  ansible-playbook ec2.yml
+ 1175  ansible --version
+ 1176  ls
+ 1177  vi ec2.yml
+ 1178  ansible-playbook ec2.yml
+ 1179  vi ec2.yml
+ 1180  ansible-playbook ec2.yml
+ 1181  vi ec2.yml
+ 1182  ansible-playbook ec2.yml
+
+======================================================================
+
+```
