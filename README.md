@@ -1765,3 +1765,168 @@ ansible-playbook ec2.yml
 ======================================================================
 
 ```
+
+
+```
+
+include_tasks , import tasks
+
+commontasks.yml
+- task1
+- task 2
+  tags : dev
+- tasks 3
+- tasks 4
+  tasgs: dev
+
+--------------------------------------------
+
+
+import_playbook
+
+
+
+
+
+
+
+raman.yaml                                           ,,, khanna.yml : another playbook    1: other,2,3other ,4,5 other
+---
+- hosts: all
+  name: 1st play
+  tasks:
+  - create a file 
+  - include_tasks: commontasks.yml
+- import_playbook: khanna.yml
+
+
+
+
+
+ansible-playbook --tags other,dev
+
+
+-------------------------------
+
+aws configure /aws role
+
+
+az login
+
+
+
+
+sudo -i
+yum update -y
+yum install -y unzip
+yum install -y wget
+https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html#cliv2-linux-install (copy the three commands)
+ln -s  /usr/local/bin/aws  /usr/bin/
+aws --version --To get the version of aws 
+
+
+AKIAZ7FSO3B57M72KANY
+
+Rm16svQGgZW+1mxsXrEWqd7jlI/bJl9wjJwO/N8e
+
+
+
+
+-----------------------------------------------------
+
+
+"  host1    2    3   4   5  "   6  7 
+
+task1
+task2 
+task3
+
+
+
+
+host1
+hst2
+3
+4
+5
+6
+5
+
+=======================================================================
+
+main ------------------ ssh ------------------------------- mnged nodes linux
+
+main (linux)  ---------   winrm  ------------------------------ mngedn nodes win
+
+
+windows server : local windpws laptop :   --------------- rdp ( 3389 ) --------------- windows server
+
+Microsoft Windows Server 2019 with Desktop Experience Locale English AMI provided by Amazon
+ami-02093b660fa33729e
+
+
+Software Image (AMI)
+Microsoft Windows Server 2019 ...read more
+ami-02093b660fa33729e
+Virtual server type (instance type)
+t2.medium
+Firewall (security group)
+raman-sg
+Storage (volumes)
+1 volume(s) - 30 GiB
+
+
+
+QKZ)NmYJ?-OW7UPpbbL2s7auBrKYugSx
+
+
+
+----------------------------------------------------------
+
+
+pywinrm : pip3 : python 3 
+
+
+
+
+asible --version
+ 1106  ansible --version
+ 1107  python --version
+ 1108  alternatives --set python /usr/bin/python3
+ 1109  alternatives --install /usr/bin/python python /usr/bin/python3 1
+ 1110  cd /var/lib/alternatives/
+ 1111  ls
+ 1112  alternatives --set python
+ 1113  alternatives --set python /usr/bin/python3
+ 1114  ls
+ 1115  python
+ 1116  clear
+ 1117  python --version
+ 1118  ansible --version
+
+
+
+
+python --version
+ 1118  ansible --version
+ 1119  clear
+ 1120  history
+ 1121  cd /root/raman/
+ 1122  ls
+ 1123  pip3 install virtualenv
+ 1124  python -m virtualenv env
+ 1125  ls
+ 1126  source env/bin/activate
+ 1127  python --version
+ 1128  python -m pip install --upgrade
+ 1129  python3 -m pip install --upgrade
+ 1130  python -m pip install --upgrade pip
+ 1131  pip3 install ansible
+ 1132  pip3 install pywinrm
+ 1133  ansible --version
+
+
+
+================================================================
+
+```
