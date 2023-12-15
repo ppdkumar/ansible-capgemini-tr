@@ -1825,10 +1825,6 @@ ln -s  /usr/local/bin/aws  /usr/bin/
 aws --version --To get the version of aws 
 
 
-AKIAZ7FSO3B57M72KANY
-
-Rm16svQGgZW+1mxsXrEWqd7jlI/bJl9wjJwO/N8e
-
 
 
 
